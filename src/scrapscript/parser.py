@@ -1,24 +1,11 @@
+from __future__ import annotations
+
 from .ast import *
 from .errors import ParseError, UnexpectedEOFError
-from .lexer import (
-    Token,
-    IntLit,
-    FloatLit,
-    Name,
-    SymbolToken,
-    BytesLit,
-    Operator,
-    PS,
-    LeftParen,
-    RightParen,
-    LeftBracket,
-    RightBracket,
-    LeftBrace,
-    RightBrace,
-    HIGHEST_PREC,
-    Juxt,
-    StringLit,
-)
+from .lexer import (HIGHEST_PREC, PS, BytesLit, FloatLit, IntLit, Juxt,
+                    LeftBrace, LeftBracket, LeftParen, Name, Operator,
+                    RightBrace, RightBracket, RightParen, StringLit,
+                    SymbolToken, Token)
 
 logger = logging.getLogger(__name__)
 
