@@ -3,12 +3,11 @@ import base64
 import dataclasses
 import enum
 import logging
-import typing
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from enum import auto
 from types import FunctionType
-from typing import Any, Dict, Optional, Union
-from collections.abc import Callable, Mapping
+from typing import Any
 
 logger = logging.getLogger(__name__)
 

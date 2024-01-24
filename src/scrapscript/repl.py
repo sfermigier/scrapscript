@@ -80,4 +80,3 @@ class ScrapReplServer(http.server.SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(json.dumps(response).encode("utf-8"))
         return
-

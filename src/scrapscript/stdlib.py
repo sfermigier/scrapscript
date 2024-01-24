@@ -40,7 +40,6 @@ def listlength(obj: Object) -> Object:
     return Int(len(obj.items))
 
 
-
 def bencode(obj: object) -> bytes:
     assert not isinstance(obj, bool)
     if isinstance(obj, int):
@@ -130,8 +129,6 @@ def deserialize(msg: str) -> Object:
     decoded = bdecode(msg)
     assert isinstance(decoded, dict)
     return Object.deserialize(decoded)
-
-
 
 
 STDLIB = {
