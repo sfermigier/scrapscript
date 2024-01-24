@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 import json
 import logging
 import urllib.request
 from typing import Any
 
-from .ast import Binop, BinopKind, Bytes, Closure, Function, Int, List, NativeFunction, Object, Record, String, Var
+from .ast import (Binop, BinopKind, Bytes, Closure, Function, Int, List,
+                  NativeFunction, Object, Record, String, Var)
 
 
 def fetch(url: Object) -> Object:
