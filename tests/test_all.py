@@ -1,5 +1,6 @@
 import re
 import unittest
+from typing import Optional
 
 from scrapscript.parser import *
 from scrapscript.cli import boot_env
@@ -1591,7 +1592,7 @@ class EvalTests(unittest.TestCase):
 
 
 class EndToEndTestsBase(unittest.TestCase):
-    def _run(self, text: str, env: Optional[Env] = None) -> Object:
+    def _run(self, text: str, env: Env | None = None) -> Object:
         tokens = tokenize(text)
         ast = parse(tokens)
         if env is None:
