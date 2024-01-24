@@ -1,11 +1,13 @@
 import argparse
 import code
+import os
 import socketserver
 import sys
 import unittest
 from types import ModuleType
 
-from scrapscript.compiler import *
+from .compiler import *
+from .stdlib import STDLIB, PRELUDE
 
 readline: Optional[ModuleType]
 try:
