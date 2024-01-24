@@ -1,4 +1,9 @@
+import http.server
+import os
+import urllib.parse
+
 from scrapscript.compiler import *
+from scrapscript.stdlib import deserialize, STDLIB, bencode
 
 ASSET_DIR = os.path.dirname(__file__)
 
