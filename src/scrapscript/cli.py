@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import argparse
 import code
 import logging
@@ -15,7 +17,6 @@ from .errors import ParseError, UnexpectedEOFError
 from .lexer import tokenize
 from .parser import parse
 from .repl import ScrapReplServer
-
 # from .compiler import *
 from .stdlib import PRELUDE, STDLIB
 

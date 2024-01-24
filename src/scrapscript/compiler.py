@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .ast import *
 
 logger = logging.getLogger(__name__)
