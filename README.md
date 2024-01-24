@@ -4,7 +4,7 @@ See [scrapscript.org](https://scrapscript.org/) for some more information. Keep
 in mind that the syntax on the website will change a little bit in the coming
 weeks to match this repository.
 
-Take a look inside [scrapscript.py](scrapscript.py) and all of its tests to get
+Take a look inside [scrapscript.py](src/scrapscript/scrapscript.py) and all of its tests to get
 an idea for how the language works.
 
 ## Usage
