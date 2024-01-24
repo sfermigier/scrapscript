@@ -1,9 +1,8 @@
 #!/usr/bin/env python3.10
 
-from typing import Tuple, Set
+from typing import Set, Tuple
 
 from .ast import *
-
 
 logger = logging.getLogger(__name__)
 
@@ -243,7 +242,7 @@ class Lexer:
         return self.make_token(BytesLit, value, int(base) if base else 64)
 
 
-def tokenize(x: str) -> typing.List[Token]:
+def tokenize(x: str) -> list[Token]:
     lexer = Lexer(x)
     tokens = []
     while (token := lexer.read_one()) and not isinstance(token, EOF):
@@ -333,7 +332,7 @@ class UnexpectedEOFError(ParseError):
     pass
 
 
-def parse_assign(tokens: typing.List[Token], p: float = 0) -> "Assign":
+def parse_assign(tokens: list[Token], p: float = 0) -> "Assign":
     assign = parse(tokens, p)
     if isinstance(assign, Spread):
         return Assign(Var("..."), assign)
@@ -342,7 +341,7 @@ def parse_assign(tokens: typing.List[Token], p: float = 0) -> "Assign":
     return assign
 
 
-def parse(tokens: typing.List[Token], p: float = 0) -> "Object":
+def parse(tokens: list[Token], p: float = 0) -> "Object":
     if not tokens:
         raise UnexpectedEOFError("unexpected end of input")
     token = tokens.pop(0)
@@ -503,7 +502,7 @@ def eval_bool(env: Env, exp: Object) -> bool:
     raise TypeError(f"expected #true or #false, got {type(result).__name__}")
 
 
-def eval_list(env: Env, exp: Object) -> typing.List[Object]:
+def eval_list(env: Env, exp: Object) -> list[Object]:
     result = eval_exp(env, exp)
     if not isinstance(result, List):
         raise TypeError(f"expected List, got {type(result).__name__}")
@@ -608,7 +607,7 @@ def match(obj: Object, pattern: Object) -> Optional[Env]:
     raise NotImplementedError(f"match not implemented for {type(pattern).__name__}")
 
 
-def free_in(exp: Object) -> Set[str]:
+def free_in(exp: Object) -> set[str]:
     if isinstance(exp, (Int, Float, String, Bytes, Hole, NativeFunction, Symbol)):
         return set()
     if isinstance(exp, Var):
@@ -766,7 +765,7 @@ class ScrapMonad:
         assert isinstance(env, dict)  # for .copy()
         self.env: Env = env.copy()
 
-    def bind(self, exp: Object) -> Tuple[Object, "ScrapMonad"]:
+    def bind(self, exp: Object) -> tuple[Object, "ScrapMonad"]:
         env = self.env
         result = eval_exp(env, exp)
         if isinstance(result, EnvObject):

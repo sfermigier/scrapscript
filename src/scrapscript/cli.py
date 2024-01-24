@@ -7,7 +7,7 @@ import unittest
 from types import ModuleType
 
 from .compiler import *
-from .stdlib import STDLIB, PRELUDE
+from .stdlib import PRELUDE, STDLIB
 
 readline: Optional[ModuleType]
 try:
@@ -25,7 +25,7 @@ def boot_env() -> Env:
 class Completer:
     def __init__(self, env: Env) -> None:
         self.env: Env = env
-        self.matches: typing.List[str] = []
+        self.matches: list[str] = []
 
     def complete(self, text: str, state: int) -> Optional[str]:
         assert "@" not in text, "TODO: handle attr/index access"

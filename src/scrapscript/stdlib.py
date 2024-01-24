@@ -76,14 +76,14 @@ class Bdecoder:
             buf += c
         return int(buf)
 
-    def decode_list(self) -> typing.List[Any]:
+    def decode_list(self) -> list[Any]:
         result = []
         while self.peek() != "e":
             result.append(self.decode())
         assert self.read() == "e"
         return result
 
-    def decode_dict(self) -> typing.Dict[Any, Any]:
+    def decode_dict(self) -> dict[Any, Any]:
         result: Dict[Any, Any] = {}
         while self.peek() != "e":
             key = self.decode()

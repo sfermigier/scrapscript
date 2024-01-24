@@ -7,17 +7,18 @@ import typing
 from dataclasses import dataclass
 from enum import auto
 from types import FunctionType
-from typing import Any, Callable, Dict, Mapping, Optional, Union
+from typing import Any, Dict, Optional, Union
+from collections.abc import Callable, Mapping
 
 logger = logging.getLogger(__name__)
 
-OBJECT_DESERIALIZERS: Dict[str, FunctionType] = {}
-OBJECT_TYPES: Dict[str, type] = {}
+OBJECT_DESERIALIZERS: dict[str, FunctionType] = {}
+OBJECT_TYPES: dict[str, type] = {}
 
 
 @dataclass(eq=True, frozen=True, unsafe_hash=True)
 class Object:
-    def __init_subclass__(cls, /, **kwargs: Dict[Any, Any]) -> None:
+    def __init_subclass__(cls, /, **kwargs: dict[Any, Any]) -> None:
         super().__init_subclass__(**kwargs)
         OBJECT_TYPES[cls.__name__] = cls
         deserializer = cls.__dict__.get("deserialize", None)
@@ -27,9 +28,9 @@ class Object:
             assert isinstance(func, FunctionType)
             OBJECT_DESERIALIZERS[cls.__name__] = func
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         cls = type(self)
-        result: Dict[str, object] = {"type": cls.__name__}
+        result: dict[str, object] = {"type": cls.__name__}
         for field in dataclasses.fields(cls):
             if issubclass(field.type, Object):
                 value = getattr(self, field.name)
@@ -38,11 +39,11 @@ class Object:
                 raise NotImplementedError("serializing non-Object fields; write your own serialize function")
         return result
 
-    def _serialize(self, **kwargs: object) -> Dict[str, object]:
+    def _serialize(self, **kwargs: object) -> dict[str, object]:
         return {"type": type(self).__name__, **kwargs}
 
     @staticmethod
-    def deserialize(msg: Dict[str, Any]) -> "Object":
+    def deserialize(msg: dict[str, Any]) -> "Object":
         assert "type" in msg, f"No idea what to do with {msg!r}"
         ty = msg["type"]
         assert isinstance(ty, str)
@@ -70,11 +71,11 @@ class Object:
 class Int(Object):
     value: int
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         return self._serialize(value=self.value)
 
     @staticmethod
-    def deserialize(msg: Dict[str, object]) -> "Int":
+    def deserialize(msg: dict[str, object]) -> "Int":
         assert msg["type"] == "Int"
         assert isinstance(msg["value"], int)
         return Int(msg["value"])
@@ -87,11 +88,11 @@ class Int(Object):
 class Float(Object):
     value: float
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         raise NotImplementedError("serialization for Float is not supported")
 
     @staticmethod
-    def deserialize(msg: Dict[str, object]) -> "Float":
+    def deserialize(msg: dict[str, object]) -> "Float":
         raise NotImplementedError("serialization for Float is not supported")
 
     def __str__(self) -> str:
@@ -102,11 +103,11 @@ class Float(Object):
 class String(Object):
     value: str
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         return {"type": "String", "value": self.value}
 
     @staticmethod
-    def deserialize(msg: Dict[str, object]) -> "String":
+    def deserialize(msg: dict[str, object]) -> "String":
         assert msg["type"] == "String"
         assert isinstance(msg["value"], str)
         return String(msg["value"])
@@ -120,11 +121,11 @@ class String(Object):
 class Bytes(Object):
     value: bytes
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         return {"type": "Bytes", "value": str(self)}
 
     @staticmethod
-    def deserialize(msg: Dict[str, object]) -> "Bytes":
+    def deserialize(msg: dict[str, object]) -> "Bytes":
         assert msg["type"] == "Bytes"
         assert isinstance(msg["value"], bytes)
         return Bytes(msg["value"])
@@ -137,11 +138,11 @@ class Bytes(Object):
 class Var(Object):
     name: str
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         return {"type": "Var", "name": self.name}
 
     @staticmethod
-    def deserialize(msg: Dict[str, object]) -> "Var":
+    def deserialize(msg: dict[str, object]) -> "Var":
         assert msg["type"] == "Var"
         assert isinstance(msg["name"], str)
         return Var(msg["name"])
@@ -158,7 +159,7 @@ class Hole(Object):
 
 @dataclass(eq=True, frozen=True, unsafe_hash=True)
 class Spread(Object):
-    name: Optional[str] = None
+    name: str | None = None
 
     def __str__(self) -> str:
         return "..." if self.name is None else f"...{self.name}"
@@ -251,7 +252,7 @@ class Binop(Object):
     left: Object
     right: Object
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         return {
             "type": "Binop",
             "op": self.op.name,
@@ -260,7 +261,7 @@ class Binop(Object):
         }
 
     @staticmethod
-    def deserialize(msg: Dict[str, object]) -> "Binop":
+    def deserialize(msg: dict[str, object]) -> "Binop":
         assert msg["type"] == "Binop"
         opname = msg["op"]
         assert isinstance(opname, str)
@@ -280,9 +281,9 @@ class Binop(Object):
 
 @dataclass(eq=True, frozen=True, unsafe_hash=True)
 class List(Object):
-    items: typing.List[Object]
+    items: list[Object]
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         return {"type": "List", "items": [item.serialize() for item in self.items]}
 
     def __str__(self) -> str:
@@ -349,11 +350,11 @@ class Assert(Object):
         return self.__repr__()
 
 
-def serialize_env(env: Env) -> Dict[str, object]:
+def serialize_env(env: Env) -> dict[str, object]:
     return {key: value.serialize() for key, value in env.items()}
 
 
-def deserialize_env(msg: Dict[str, Any]) -> Env:
+def deserialize_env(msg: dict[str, Any]) -> Env:
     return {key: Object.deserialize(value) for key, value in msg.items()}
 
 
@@ -361,11 +362,11 @@ def deserialize_env(msg: Dict[str, Any]) -> Env:
 class EnvObject(Object):
     env: Env
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         return self._serialize(env=serialize_env(self.env))
 
     @staticmethod
-    def deserialize(msg: Dict[str, object]) -> "EnvObject":
+    def deserialize(msg: dict[str, object]) -> "EnvObject":
         assert msg["type"] == "EnvObject"
         env_obj = msg["env"]
         assert isinstance(env_obj, dict)
@@ -388,9 +389,9 @@ class MatchCase(Object):
 
 @dataclass(eq=True, frozen=True, unsafe_hash=True)
 class MatchFunction(Object):
-    cases: typing.List[MatchCase]
+    cases: list[MatchCase]
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         return self._serialize(cases=[case.serialize() for case in self.cases])
 
     def __str__(self) -> str:
@@ -402,7 +403,7 @@ class MatchFunction(Object):
 class Relocation(Object):
     name: str
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         return self._serialize(name=self.name)
 
     def __str__(self) -> str:
@@ -413,7 +414,7 @@ class Relocation(Object):
 @dataclass(eq=True, frozen=True, unsafe_hash=True)
 class NativeFunctionRelocation(Relocation):
     @staticmethod
-    def deserialize(msg: Dict[str, object]) -> "NativeFunction":
+    def deserialize(msg: dict[str, object]) -> "NativeFunction":
         # TODO(max): Should this return a Var or an actual
         # NativeFunctionRelocation object instead of doing the relocation in
         # the deserialization?
@@ -437,7 +438,7 @@ class NativeFunction(Object):
     name: str
     func: Callable[[Object], Object]
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         return NativeFunctionRelocation(self.name).serialize()
 
     def __str__(self) -> str:
@@ -448,13 +449,13 @@ class NativeFunction(Object):
 @dataclass(eq=True, frozen=True, unsafe_hash=True)
 class Closure(Object):
     env: Env
-    func: Union[Function, MatchFunction]
+    func: Function | MatchFunction
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         return self._serialize(env=serialize_env(self.env), func=self.func.serialize())
 
     @staticmethod
-    def deserialize(msg: Dict[str, object]) -> "Closure":
+    def deserialize(msg: dict[str, object]) -> "Closure":
         assert msg["type"] == "Closure"
         env_obj = msg["env"]
         assert isinstance(env_obj, dict)
@@ -472,13 +473,13 @@ class Closure(Object):
 
 @dataclass(eq=True, frozen=True, unsafe_hash=True)
 class Record(Object):
-    data: Dict[str, Object]
+    data: dict[str, Object]
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         return self._serialize(data={key: value.serialize() for key, value in self.data.items()})
 
     @staticmethod
-    def deserialize(msg: Dict[str, object]) -> "Record":
+    def deserialize(msg: dict[str, object]) -> "Record":
         assert msg["type"] == "Record"
         data_obj = msg["data"]
         assert isinstance(data_obj, dict)
@@ -504,11 +505,11 @@ class Access(Object):
 class Symbol(Object):
     value: str
 
-    def serialize(self) -> Dict[str, object]:
+    def serialize(self) -> dict[str, object]:
         return self._serialize(value=self.value)
 
     @staticmethod
-    def deserialize(msg: Dict[str, object]) -> "Symbol":
+    def deserialize(msg: dict[str, object]) -> "Symbol":
         assert msg["type"] == "Symbol"
         value_obj = msg["value"]
         assert isinstance(value_obj, str)
