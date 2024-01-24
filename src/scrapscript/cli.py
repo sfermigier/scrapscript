@@ -1,12 +1,20 @@
 import argparse
 import code
+import logging
 import os
 import socketserver
 import sys
 import unittest
 from types import ModuleType
+from typing import Optional, Any, Union
 
-from .compiler import *
+from scrapscript.ast import Env, EnvObject
+from scrapscript.compiler import eval_exp
+from .errors import UnexpectedEOFError, ParseError
+from .lexer import tokenize
+from .parser import parse
+from .repl import ScrapReplServer
+# from .compiler import *
 from .stdlib import PRELUDE, STDLIB
 
 readline: Optional[ModuleType]
@@ -14,6 +22,9 @@ try:
     import readline
 except ImportError:
     readline = None
+
+
+logger = logging.getLogger(__name__)
 
 
 def boot_env() -> Env:

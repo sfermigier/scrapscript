@@ -1,12 +1,19 @@
 import http.server
+import json
+import logging
 import os
 import urllib.parse
+from typing import Dict, Any
 
-from scrapscript.compiler import *
-from scrapscript.stdlib import STDLIB, bencode, deserialize
+from .ast import EnvObject
+from .compiler import ScrapMonad
+from .lexer import tokenize
+from .parser import parse
+from .stdlib import STDLIB, bencode, deserialize
 
 ASSET_DIR = os.path.dirname(__file__)
 
+logger = logging.getLogger(__name__)
 
 class ScrapReplServer(http.server.SimpleHTTPRequestHandler):
     def do_GET(self) -> None:

@@ -1,5 +1,6 @@
 import json
 import urllib.request
+from typing import Dict
 
 from .ast import *
 

@@ -1,6 +1,7 @@
 import re
 import unittest
 
+from scrapscript.parser import *
 from scrapscript.cli import boot_env
 from scrapscript.compiler import *
 from scrapscript.stdlib import *
