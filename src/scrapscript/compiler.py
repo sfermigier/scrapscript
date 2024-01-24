@@ -1,17 +1,15 @@
-from typing import Union, Optional, Dict
-
 from .ast import *
 
 logger = logging.getLogger(__name__)
 
 
-def unpack_number(obj: Object) -> Union[int, float]:
+def unpack_number(obj: Object) -> int | float:
     if not isinstance(obj, (Int, Float)):
         raise TypeError(f"expected Int or Float, got {type(obj).__name__}")
     return obj.value
 
 
-def eval_number(env: Env, exp: Object) -> Union[int, float]:
+def eval_number(env: Env, exp: Object) -> int | float:
     result = eval_exp(env, exp)
     return unpack_number(result)
 
@@ -41,7 +39,7 @@ def make_bool(x: bool) -> Object:
     return Symbol("true" if x else "false")
 
 
-def wrap_inferred_number_type(x: Union[int, float]) -> Object:
+def wrap_inferred_number_type(x: int | float) -> Object:
     # TODO: Since this is intended to be a reference implementation
     # we should avoid relying heavily on Python's implementation of
     # arithmetic operations, type inference, and multiple dispatch.
@@ -51,7 +49,7 @@ def wrap_inferred_number_type(x: Union[int, float]) -> Object:
     return Float(x)
 
 
-BINOP_HANDLERS: Dict[BinopKind, Callable[[Env, Object, Object], Object]] = {
+BINOP_HANDLERS: dict[BinopKind, Callable[[Env, Object, Object], Object]] = {
     BinopKind.ADD: lambda env, x, y: wrap_inferred_number_type(eval_number(env, x) + eval_number(env, y)),
     BinopKind.SUB: lambda env, x, y: wrap_inferred_number_type(eval_number(env, x) - eval_number(env, y)),
     BinopKind.MUL: lambda env, x, y: wrap_inferred_number_type(eval_number(env, x) * eval_number(env, y)),
@@ -78,7 +76,7 @@ class MatchError(Exception):
     pass
 
 
-def match(obj: Object, pattern: Object) -> Optional[Env]:
+def match(obj: Object, pattern: Object) -> Env | None:
     if isinstance(pattern, Int):
         return {} if isinstance(obj, Int) and obj.value == pattern.value else None
     if isinstance(pattern, Float):

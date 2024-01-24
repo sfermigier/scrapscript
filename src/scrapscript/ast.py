@@ -1,4 +1,3 @@
-#!/usr/bin/env python3.10
 import base64
 import dataclasses
 import enum

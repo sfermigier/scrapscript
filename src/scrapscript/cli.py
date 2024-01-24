@@ -6,18 +6,20 @@ import socketserver
 import sys
 import unittest
 from types import ModuleType
-from typing import Optional, Any, Union
+from typing import Any
 
 from scrapscript.ast import Env, EnvObject
 from scrapscript.compiler import eval_exp
-from .errors import UnexpectedEOFError, ParseError
+
+from .errors import ParseError, UnexpectedEOFError
 from .lexer import tokenize
 from .parser import parse
 from .repl import ScrapReplServer
+
 # from .compiler import *
 from .stdlib import PRELUDE, STDLIB
 
-readline: Optional[ModuleType]
+readline: ModuleType | None
 try:
     import readline
 except ImportError:
@@ -38,7 +40,7 @@ class Completer:
         self.env: Env = env
         self.matches: list[str] = []
 
-    def complete(self, text: str, state: int) -> Optional[str]:
+    def complete(self, text: str, state: int) -> str | None:
         assert "@" not in text, "TODO: handle attr/index access"
         if state == 0:
             options = sorted(self.env.keys())
@@ -149,7 +151,7 @@ def test_command(args: argparse.Namespace) -> None:
 def serve_command(args: argparse.Namespace) -> None:
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
-    server: Union[type[socketserver.TCPServer], type[socketserver.ForkingTCPServer]]
+    server: type[socketserver.TCPServer] | type[socketserver.ForkingTCPServer]
     if args.fork:
         server = socketserver.ForkingTCPServer
     else:

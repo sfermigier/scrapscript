@@ -1,6 +1,5 @@
 from .ast import *
 from .lexer import *
-from .errors import ParseError, UnexpectedEOFError
 
 logger = logging.getLogger(__name__)
 

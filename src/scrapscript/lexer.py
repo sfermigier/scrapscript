@@ -2,7 +2,7 @@ import dataclasses
 from dataclasses import dataclass
 from typing import Any
 
-from scrapscript.errors import UnexpectedEOFError, ParseError
+from scrapscript.errors import ParseError, UnexpectedEOFError
 
 
 @dataclass(frozen=True)

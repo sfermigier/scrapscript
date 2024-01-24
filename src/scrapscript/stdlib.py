@@ -1,8 +1,9 @@
 import json
+import logging
 import urllib.request
-from typing import Dict
+from typing import Any
 
-from .ast import *
+from .ast import Binop, BinopKind, Bytes, Closure, Function, Int, List, NativeFunction, Object, Record, String, Var
 
 
 def fetch(url: Object) -> Object:
@@ -84,7 +85,7 @@ class Bdecoder:
         return result
 
     def decode_dict(self) -> dict[Any, Any]:
-        result: Dict[Any, Any] = {}
+        result: dict[Any, Any] = {}
         while self.peek() != "e":
             key = self.decode()
             value = self.decode()

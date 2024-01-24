@@ -3,7 +3,7 @@ import json
 import logging
 import os
 import urllib.parse
-from typing import Dict, Any
+from typing import Any
 
 from .ast import EnvObject
 from .compiler import ScrapMonad
@@ -14,6 +14,7 @@ from .stdlib import STDLIB, bencode, deserialize
 ASSET_DIR = os.path.dirname(__file__)
 
 logger = logging.getLogger(__name__)
+
 
 class ScrapReplServer(http.server.SimpleHTTPRequestHandler):
     def do_GET(self) -> None:
@@ -57,7 +58,7 @@ class ScrapReplServer(http.server.SimpleHTTPRequestHandler):
         self.wfile.write(b"""try hitting <a href="/repl">/repl</a>""")
         return
 
-    def do_eval(self, query: Dict[str, Any]) -> None:
+    def do_eval(self, query: dict[str, Any]) -> None:
         exp = query.get("exp")
         if exp is None:
             raise TypeError("Need expression to evaluate")
