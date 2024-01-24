@@ -2,6 +2,7 @@ import re
 import unittest
 from typing import Optional
 
+from scrapscript.lexer import tokenize, Lexer, StringLit
 from scrapscript.parser import *
 from scrapscript.cli import boot_env
 from scrapscript.compiler import *
